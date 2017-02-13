@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+	<!-- Add icon library -->
+	<!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"> -->
+	<script src="../ACE/src/ace.js" type="text/javascript" charset="utf-8"></script>
+	<head>
+		<title>ACE in Action</title>
+		<style type="text/css" media="screen">
+			#editor { 
+				position: absolute;
+				top: 0;
+				right: 0;
+				bottom: 0;
+				left: 0;
+				/*width: 50%;*/
+			}
+			#sidebar { 
+				position: absolute;
+				top: 0;
+				right: 0;
+				bottom: 0;
+				/* left: 0; */
+				/*width: 50%;*/
+				z-index: 100;
+			}
+			body {margin:0}
+
+			.icon-bar {
+				width: 90px;
+				text-align: center;
+				/*background-color: #555;*/
+				background-color:rgba(85, 85, 85, 0.64);
+			}
+
+			.icon-bar a {
+				padding: 16px;
+				display: block;
+				transition: all 0.3s ease;
+				color: white;
+				font-size: 36px;
+			}
+
+			.icon-bar a:hover {
+				background-color: #4CAF50;
+			}
+
+			.active {
+				background-color: #4CAF50 !important;
+			}
+		</style>
+	</head>
+	<body>
+
+		<div id="editor">function foo(items) {
+			var x = "All this is syntax highlighted";
+			return x;}
+		</div>
+		
+		<div id="sidebar">
+			<div class="icon-bar">
+				<a href="#" name="bold" onclick="process(this);">B</a> 
+				<a href="#" name="italic" onclick="process(this);">I</i></a> 
+				<!-- <a href="#"></a>  -->
+				<!-- <a href="#"></a> -->
+				<!-- <a href="#"></a>  -->
+			</div>
+		</div>
+	</body>
+	<script>
+		var editor = ace.edit("editor");
+		editor.setTheme("ace/theme/monokai");
+		editor.getSession().setMode("ace/mode/html");
+		editor.$blockScrolling = Infinity;
+		
+		function process(caller) {
+			// get caller identifier
+			var callerName = caller.name;
+			<!-- console.log(callerName); -->
+			
+			// get selected text
+			var selectionRange = editor.getSelectionRange();
+			var doc = editor.getSession();
+			// check if prev simbol is "%"
+			var nRange = selectionRange.clone();
+			nRange.setEnd(nRange.start.row, nRange.start.column);
+			nRange.setStart(nRange.start.row, nRange.start.column-1);
+			
+			var prefix = doc.getTextRange(nRange);
+			if (prefix == "%"){
+				selectionRange.setStart(nRange.start.row, nRange.start.column);
+			}
+			
+			// modify text
+			var selectionText = doc.getTextRange(selectionRange);
+			if (selectionText.length > 0){
+				switch(callerName) {
+					case "bold":{ 
+						doc.replace(selectionRange, "<b>" + selectionText + "</b>");
+						break;
+					}
+						
+					case "italic":{ 
+						doc.replace(selectionRange, "<i>" + selectionText + "</i>");
+						break;
+					}
+				}
+			}
+		}
+	</script>
+	
+</html>
